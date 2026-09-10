@@ -1,5 +1,7 @@
 # Smart Me Up
 
+[![CI](https://github.com/mbush91/opencode-smart-me-up/actions/workflows/ci.yml/badge.svg)](https://github.com/mbush91/opencode-smart-me-up/actions/workflows/ci.yml)
+
 A small [OpenCode](https://opencode.ai) TUI plugin that rewrites the text currently sitting in your prompt with an OpenAI model.
 
 Hit **Ctrl-Shift-S** and Smart Me Up will fix typos, tighten the wording, reduce ambiguity, and use more precise technical/scientific language when appropriate. The rewritten text replaces the current prompt, but it is **not submitted** — you still review it and press Enter yourself.
@@ -76,9 +78,10 @@ The default instructions tell the model to correct errors and improve precision 
 
 ```bash
 bun install
-bun run typecheck
-bun test
+bun run check
 ```
+
+`bun run check` runs both TypeScript typechecking and the unit-test suite. GitHub Actions runs the same validation automatically for pushes and pull requests targeting `main`.
 
 Source layout:
 
