@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { RewriteError, extractOutputText, rewritePrompt } from "../src/rewrite"
+import { RewriteError, extractOutputText, rewritePrompt, type FetchLike } from "../src/rewrite"
 
 describe("extractOutputText", () => {
   test("uses output_text when present", () => {
@@ -22,7 +22,7 @@ describe("rewritePrompt", () => {
   test("sends model and reasoning variant to the Responses API", async () => {
     let requestUrl = ""
     let requestBody: Record<string, unknown> = {}
-    const fetchImpl: typeof fetch = async (input, init) => {
+    const fetchImpl: FetchLike = async (input, init) => {
       requestUrl = String(input)
       requestBody = JSON.parse(String(init?.body)) as Record<string, unknown>
       return new Response(JSON.stringify({ output: [{ content: [{ type: "output_text", text: "Rewritten" }] }] }))
@@ -46,7 +46,7 @@ describe("rewritePrompt", () => {
 
   test("omits reasoning when variant is none", async () => {
     let requestBody: Record<string, unknown> = {}
-    const fetchImpl: typeof fetch = async (_input, init) => {
+    const fetchImpl: FetchLike = async (_input, init) => {
       requestBody = JSON.parse(String(init?.body)) as Record<string, unknown>
       return new Response(JSON.stringify({ output_text: "Rewritten" }))
     }
@@ -56,7 +56,7 @@ describe("rewritePrompt", () => {
   })
 
   test("surfaces OpenAI API errors", async () => {
-    const fetchImpl: typeof fetch = async () =>
+    const fetchImpl: FetchLike = async () =>
       new Response(JSON.stringify({ error: { message: "bad model" } }), { status: 400 })
 
     await expect(rewritePrompt({ text: "fix me", apiKey: "sk-test", fetchImpl })).rejects.toEqual(

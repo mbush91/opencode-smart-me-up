@@ -30,6 +30,8 @@ export class RewriteError extends Error {
   }
 }
 
+export type FetchLike = (input: string, init?: RequestInit) => Promise<Response>
+
 export type RewriteOptions = {
   text: string
   apiKey: string
@@ -38,7 +40,7 @@ export type RewriteOptions = {
   baseUrl?: string
   instructions?: string
   signal?: AbortSignal
-  fetchImpl?: typeof fetch
+  fetchImpl?: FetchLike
 }
 
 function errorMessage(body: RewriteResponse): string | undefined {
@@ -76,7 +78,7 @@ export async function rewritePrompt(options: RewriteOptions): Promise<string> {
   const model = options.model?.trim() || DEFAULT_MODEL
   const variant = options.variant ?? DEFAULT_VARIANT
   const baseUrl = (options.baseUrl?.trim() || DEFAULT_BASE_URL).replace(/\/+$/, "")
-  const fetchImpl = options.fetchImpl ?? fetch
+  const fetchImpl: FetchLike = options.fetchImpl ?? ((url, init) => fetch(url, init))
 
   const request: Record<string, unknown> = {
     model,
